@@ -17,14 +17,16 @@ const (
 type Kind int
 
 const (
-	Helm  Kind = 0
-	Chest Kind = 1
-	Sword Kind = 2
-	Axe   Kind = 3
-	Mace  Kind = 4
+	Helm   Kind = 0
+	Armor  Kind = 1
+	Sword  Kind = 2
+	Axe    Kind = 3
+	Mace   Kind = 4
+	Shield Kind = 5
 )
 
 type Item struct {
+	name        string
 	Tier        Tier
 	kind        Kind
 	defense     int
@@ -56,9 +58,16 @@ func rollTier() Tier {
 	return tier
 }
 
+func rollKind() Kind {
+	n := roll(0, 5)
+	return Kind(n)
+}
+
 func GenerateItem(monsterLevel int) Item {
 
 	tier := rollTier()
+	kind := rollKind()
+	level := monsterLevel
 
-	return Item{Tier: tier, kind: Helm, defense: roll(5, 10)}
+	return Item{Tier: tier, kind: kind, defense: roll(5, 10), level: level}
 }
