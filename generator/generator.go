@@ -25,12 +25,13 @@ const (
 )
 
 type Item struct {
-	tier        Tier
+	Tier        Tier
 	kind        Kind
 	defense     int
 	blockChance int
 	attack      int
 	damage      int
+	level       int
 	mods        map[Mod]int
 }
 
@@ -40,6 +41,24 @@ func roll(min int, max int) int {
 	return rnd.Intn(max-min) + min
 }
 
-func GenerateItem() Item {
-	return Item{tier: Normal, kind: Helm, defense: roll(5, 10)}
+func rollTier() Tier {
+	var tier Tier
+	d100 := roll(1, 100)
+	if d100 <= 1 {
+		tier = Unique
+	} else if d100 <= 5 {
+		tier = Rare
+	} else if d100 <= 25 {
+		tier = Magic
+	} else {
+		tier = Normal
+	}
+	return tier
+}
+
+func GenerateItem(monsterLevel int) Item {
+
+	tier := rollTier()
+
+	return Item{Tier: tier, kind: Helm, defense: roll(5, 10)}
 }
