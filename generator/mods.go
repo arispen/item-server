@@ -18,7 +18,14 @@ const (
 	ColdResistance      Mod = 12
 	LightningResistance Mod = 13
 	PoisonResistance    Mod = 14
+	AttackSpeed         Mod = 15
+	Strength            Mod = 16
+	Dexterity           Mod = 17
+	Vitality            Mod = 18
+	Life                Mod = 19
 
-	AllSkills Mod = 101
-	AllRes    Mod = 102
+	AllSkills     Mod = 1001
+	AllRes        Mod = 1002
+	AllAttributes Mod = 1003
+	DamageReduced Mod = 1004
 )

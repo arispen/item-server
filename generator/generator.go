@@ -35,6 +35,9 @@ type Item struct {
 	damage      int
 	level       int
 	mods        map[Mod]int
+	reqLvl      int
+	reqStr      int
+	reqDex      int
 }
 
 func roll(min int, max int) int {
@@ -45,12 +48,12 @@ func roll(min int, max int) int {
 
 func rollTier() Tier {
 	var tier Tier
-	d100 := roll(1, 100)
-	if d100 <= 1 {
+	dk := roll(1, 1000)
+	if dk <= 10 {
 		tier = Unique
-	} else if d100 <= 5 {
+	} else if dk <= 50 {
 		tier = Rare
-	} else if d100 <= 25 {
+	} else if dk <= 250 {
 		tier = Magic
 	} else {
 		tier = Normal
@@ -64,10 +67,33 @@ func rollKind() Kind {
 }
 
 func GenerateItem(monsterLevel int) Item {
-
 	tier := rollTier()
-	kind := rollKind()
-	level := monsterLevel
+	var name string
+	var kind Kind
+	var level, reqLvl, defense, reqStr int
+	var mods map[Mod]int
 
-	return Item{Tier: tier, kind: kind, defense: roll(5, 10), level: level}
+	if tier == Unique {
+		// TODO: roll unique item
+		name = "Shako"
+		kind = Helm
+		reqLvl = 62
+		reqStr = 50
+		defense = roll(98, 141)
+		mods = map[Mod]int{
+			AllSkills:     2,
+			AllAttributes: 2,
+			MagicFind:     50,
+			DamageReduced: 10,
+			Life:          100,
+		}
+
+	} else {
+		// TODO: roll mods
+		kind = rollKind()
+		level = monsterLevel
+	}
+
+	return Item{name: name, Tier: tier, kind: kind, defense: defense,
+		level: level, mods: mods, reqLvl: reqLvl, reqStr: reqStr}
 }
