@@ -39,7 +39,7 @@ type Item struct {
 	reqDex      int
 }
 
-func roll(min int, max int) int {
+func Roll(min int, max int) int {
 	seed := rand.NewSource(time.Now().UnixNano())
 	rnd := rand.New(seed)
 	if min < 1 {
@@ -53,7 +53,7 @@ func roll(min int, max int) int {
 
 func rollTier() Tier {
 	var tier Tier
-	dk := roll(1, 1000)
+	dk := Roll(1, 1000)
 	if dk <= 10 {
 		tier = Unique
 	} else if dk <= 50 {
@@ -67,15 +67,15 @@ func rollTier() Tier {
 }
 
 func rollKind() Kind {
-	n := roll(0, 5)
+	n := Roll(0, 5)
 	return Kind(n)
 }
 
 func rollMods(modsNum int, monsterLevel int) map[Mod]int {
 	mods := make(map[Mod]int)
 	for len(mods) < modsNum {
-		mod := Mod(roll(0, 19))
-		mods[mod] = roll(monsterLevel/2, monsterLevel)
+		mod := Mod(Roll(0, 19))
+		mods[mod] = Roll(monsterLevel/2, monsterLevel)
 	}
 	return mods
 }
@@ -93,7 +93,7 @@ func GenerateItem(monsterLevel int) Item {
 		kind = Helm
 		reqLvl = 62
 		reqStr = 50
-		defense = roll(98, 141)
+		defense = Roll(98, 141)
 		mods = map[Mod]int{
 			AllSkills:     2,
 			AllAttributes: 2,
@@ -107,12 +107,12 @@ func GenerateItem(monsterLevel int) Item {
 		kind = rollKind()
 		reqLvl = monsterLevel
 		if kind == Helm || kind == Armor || kind == Shield {
-			defense = roll(monsterLevel/2, monsterLevel)
+			defense = Roll(monsterLevel/2, monsterLevel)
 		} else if kind == Sword || kind == Axe || kind == Mace {
-			attack = roll(monsterLevel/2, monsterLevel)
-			damage = roll(monsterLevel/2, monsterLevel)
+			attack = Roll(monsterLevel/2, monsterLevel)
+			damage = Roll(monsterLevel/2, monsterLevel)
 		} else if kind == Shield {
-			blockChance = roll(monsterLevel/4, monsterLevel/3)
+			blockChance = Roll(monsterLevel/4, monsterLevel/3)
 			if blockChance < 5 {
 				blockChance = 5
 			}
@@ -122,11 +122,11 @@ func GenerateItem(monsterLevel int) Item {
 		}
 
 		if tier == Magic {
-			mods = rollMods(roll(1, 2), monsterLevel)
+			mods = rollMods(Roll(1, 2), monsterLevel)
 		}
 
 		if tier == Rare {
-			mods = rollMods(roll(3, 6), monsterLevel)
+			mods = rollMods(Roll(3, 6), monsterLevel)
 		}
 
 		// TODO: names
