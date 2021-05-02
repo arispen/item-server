@@ -33,7 +33,6 @@ type Item struct {
 	blockChance int
 	attack      int
 	damage      int
-	level       int
 	mods        map[Mod]int
 	reqLvl      int
 	reqStr      int
@@ -43,7 +42,13 @@ type Item struct {
 func roll(min int, max int) int {
 	seed := rand.NewSource(time.Now().UnixNano())
 	rnd := rand.New(seed)
-	return rnd.Intn(max-min) + min
+	if min < 1 {
+		min = 1
+	}
+	if max < min {
+		max = min
+	}
+	return rnd.Intn(max-min+1) + min
 }
 
 func rollTier() Tier {
@@ -66,11 +71,20 @@ func rollKind() Kind {
 	return Kind(n)
 }
 
+func rollMods(modsNum int, monsterLevel int) map[Mod]int {
+	mods := make(map[Mod]int)
+	for len(mods) < modsNum {
+		mod := Mod(roll(0, 19))
+		mods[mod] = roll(monsterLevel/2, monsterLevel)
+	}
+	return mods
+}
+
 func GenerateItem(monsterLevel int) Item {
 	tier := rollTier()
 	var name string
 	var kind Kind
-	var level, reqLvl, defense, reqStr int
+	var reqLvl, defense, damage, attack, blockChance, reqStr int
 	var mods map[Mod]int
 
 	if tier == Unique {
@@ -89,11 +103,35 @@ func GenerateItem(monsterLevel int) Item {
 		}
 
 	} else {
-		// TODO: roll mods
+
 		kind = rollKind()
-		level = monsterLevel
+		reqLvl = monsterLevel
+		if kind == Helm || kind == Armor || kind == Shield {
+			defense = roll(monsterLevel/2, monsterLevel)
+		} else if kind == Sword || kind == Axe || kind == Mace {
+			attack = roll(monsterLevel/2, monsterLevel)
+			damage = roll(monsterLevel/2, monsterLevel)
+		} else if kind == Shield {
+			blockChance = roll(monsterLevel/4, monsterLevel/3)
+			if blockChance < 5 {
+				blockChance = 5
+			}
+			if blockChance > 75 {
+				blockChance = 75
+			}
+		}
+
+		if tier == Magic {
+			mods = rollMods(roll(1, 2), monsterLevel)
+		}
+
+		if tier == Rare {
+			mods = rollMods(roll(3, 6), monsterLevel)
+		}
+
+		// TODO: names
 	}
 
-	return Item{name: name, Tier: tier, kind: kind, defense: defense,
-		level: level, mods: mods, reqLvl: reqLvl, reqStr: reqStr}
+	return Item{name: name, Tier: tier, kind: kind, defense: defense, damage: damage,
+		mods: mods, reqLvl: reqLvl, reqStr: reqStr, attack: attack, blockChance: blockChance}
 }
